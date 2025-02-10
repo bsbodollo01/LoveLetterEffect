@@ -17,7 +17,7 @@
 
             body {
                 font-family: 'Inter', sans-serif;
-                background: linear-gradient(135deg, #ffe6f2, #ffc0cb);
+                background-color: #ffe6f2;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -28,16 +28,18 @@
             #message-container {
                 background-color: #ffb6c1;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-                transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+                transition: height 1.5s ease-in-out, opacity 0.5s ease-in-out;
                 border-radius: 15px;
                 padding: 20px;
                 opacity: 0;
-                transform: scale(0.8);
-                display: none;
                 text-align: center;
+                display: none;
+            }
+
+            #message {
                 font-family: 'Sacramento', cursive;
                 font-size: 1.5rem;
-                color: white;
+                color: #fff;
             }
 
             .heart-container {
@@ -45,25 +47,13 @@
                 position: relative;
                 margin-top: 20px;
             }
-
-            .floating-heart {
-                position: absolute;
-                animation: floatUp 1s ease-in-out;
-                opacity: 0;
-                font-size: 1.5rem;
-            }
-
-            @keyframes floatUp {
-                0% { transform: translateY(0); opacity: 1; }
-                100% { transform: translateY(-50px); opacity: 0; }
-            }
         </style>
     </head>
     <body>
         <div class="flex justify-center items-center flex-col w-[100vw] h-[100vh]">
-            <div id="message-container" class="flex-col items-center max-h-[80vh] max-w-[50vw] max-md:max-w-[70vw] max-sm:max-w-[80vw] max-sm:max-h-[80vh] py-5">
-                <div class="w-[90%] mb-auto mt-auto">
-                    <article id="message" class="prose">You are loved! ❤️</article>
+            <div id="message-container" class="max-h-[80vh] max-w-[50vw] max-md:max-w-[70vw] max-sm:max-w-[80vw] max-sm:max-h-[80vh] py-5">
+                <div class="w-[90%]">
+                    <article id="message" class="prose">Loading message...</article>
                 </div>
                 <button id="close-message" class="mt-3 px-4 py-2 bg-pink-500 text-white rounded-lg">Close</button>
             </div>
@@ -74,30 +64,29 @@
         </div>
 
         <script>
+            async function loadMessage() {
+                try {
+                    let response = await fetch('message.txt');
+                    if (!response.ok) throw new Error('Message not found.');
+                    let text = await response.text();
+                    document.getElementById('message').innerText = text;
+                } catch (error) {
+                    document.getElementById('message').innerText = "Couldn't load the message. 💌";
+                    console.error(error);
+                }
+            }
+        
             function showMessage() {
                 const messageContainer = document.getElementById('message-container');
-                messageContainer.style.display = 'flex';
-                setTimeout(() => {
-                    messageContainer.style.opacity = '1';
-                    messageContainer.style.transform = 'scale(1)';
-                }, 50);
-                
-                let heart = document.createElement('i');
-                heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
-                heart.style.color = '#ff69b4';
-                heart.style.left = `${Math.random() * 30 - 15}px`;
-                document.querySelector('.heart-container').appendChild(heart);
-                
-                setTimeout(() => heart.remove(), 1000);
+                messageContainer.style.display = 'block';
+                messageContainer.style.opacity = '1';
+                loadMessage(); // Load message when the heart is clicked
             }
-
+        
             document.getElementById('close-message').addEventListener('click', () => {
                 const messageContainer = document.getElementById('message-container');
                 messageContainer.style.opacity = '0';
-                messageContainer.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    messageContainer.style.display = 'none';
-                }, 500);
+                setTimeout(() => messageContainer.style.display = 'none', 500);
             });
         </script>
     </body>
