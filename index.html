@@ -81,22 +81,35 @@
         </div>
 
         <script>
+            async function loadMessage() {
+                try {
+                    let response = await fetch('message.txt');
+                    if (!response.ok) throw new Error('Message not found.');
+                    let text = await response.text();
+                    document.getElementById('message').innerText = text;
+                } catch (error) {
+                    document.getElementById('message').innerText = "Couldn't load the message. 💌";
+                    console.error(error);
+                }
+            }
+        
             function showMessage() {
                 const messageContainer = document.getElementById('message-container');
                 messageContainer.classList.toggle('show');
-                
+                loadMessage(); // Load message when the heart is clicked
+        
                 let heart = document.createElement('i');
                 heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
                 heart.style.color = '#ff69b4';
                 heart.style.left = `${Math.random() * 30 - 15}px`;
                 document.querySelector('.heart-container').appendChild(heart);
-                
+        
                 setTimeout(() => heart.remove(), 1000);
             }
-            
+        
             document.getElementById('close-message').addEventListener('click', () => {
                 document.getElementById('message-container').classList.remove('show');
             });
-        </script>
+        </script>        
     </body>
 </html>
